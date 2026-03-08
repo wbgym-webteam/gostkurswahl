@@ -22,8 +22,10 @@ def create_app():
 
     with app.app_context():
         from .views import views
+        from .auth import auth
 
         app.register_blueprint(views)
+        app.register_blueprint(auth)
 
         db.create_all()
 
