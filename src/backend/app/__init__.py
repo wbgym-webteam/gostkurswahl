@@ -5,12 +5,14 @@ from flask_migrate import Migrate
 import os
 from dotenv import load_dotenv
 import secrets
+from flask_cors import CORS
 
 db = SQLAlchemy()
 
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
 
     # TODO: Load environment variables from .env file
     app.config["SECRET_KEY"] = secrets.token_hex(32)
