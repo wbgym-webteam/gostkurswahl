@@ -12,5 +12,10 @@ views = Blueprint("views", __name__, static_folder="static")
 
 
 @views.route("/")
-def hello_world():
-    return "Hallo Welt"
+def root():
+    return redirect(url_for("auth.login"))
+
+
+@views.route("/selection")
+def selection():
+    return "selection"
