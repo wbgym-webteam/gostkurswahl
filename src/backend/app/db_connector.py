@@ -19,3 +19,13 @@ class DB_Connector:
                 {"success": True, "user_id": user[0]}
             )  # Returning the user ID
         return jsonify({"success": False})
+
+    def retrieve_user_options(self, user_id):
+        query = db.execute(
+            text("SELECT options FROM users WHERE id=:user_id"),
+            {"user_id": user_id},
+        )
+        result = query.mappings().fetchone()
+        if result is not None:
+            return jsonify({"success": True, "options": result[0]})
+        return jsonify({"success": False, "options": None})

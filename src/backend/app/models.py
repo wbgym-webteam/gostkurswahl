@@ -10,6 +10,7 @@ class User(db.Model):
     last_name = db.Column(db.String(80), unique=True, nullable=False)
     grade = db.Column(db.Integer, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    options = db.Column(db.Text, nullable=True)  # JSON string of user options
 
 
 class selection(db.Model):
