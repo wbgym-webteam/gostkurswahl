@@ -10,7 +10,7 @@ def api_login():
     data = request.get_json()
     logincode = data.get("logincode")
     verification = dbc.verify_logincode(logincode)
-    if dbc.verify_logincode(logincode).get_json().get("success") == True:
+    if verification.get_json().get("success") == True:
         return jsonify(
             {"success": True, "user_id": verification.get_json().get("user_id")}
         )
