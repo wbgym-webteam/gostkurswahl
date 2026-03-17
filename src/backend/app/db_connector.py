@@ -37,6 +37,16 @@ class DB_Connector:
         db.commit()
         return jsonify({"success": True, "user_id": user.id})
 
+    def delete_user_from_db(self, user_id):
+        query = db.execute(
+            text("DELETE FROM users WHERE id=:user_id"),
+            {"user_id": user_id},
+        )
+        db.commit()
+        if query.rowcount > 0:
+            return jsonify({"success": True})
+        return jsonify({"success": False})
+
     def get_user_selection(self, user_id):
         query = db.execute(
             text("SELECT selection FROM users WHERE id=:user_id"),
@@ -46,3 +56,13 @@ class DB_Connector:
         if result is not None:
             return jsonify({"success": True, "selection": result[0]})
         return jsonify({"success": False, "selection": None})
+
+    def update_user_selection(self, user_id, selection):
+        query = db.execute(
+            text("UPDATE users SET selection=:selection WHERE id=:user_id"),
+            {"selection": selection, "user_id": user_id},
+        )
+        db.commit()
+        if query.rowcount > 0:
+            return jsonify({"success": True})
+        return jsonify({"success": False})
