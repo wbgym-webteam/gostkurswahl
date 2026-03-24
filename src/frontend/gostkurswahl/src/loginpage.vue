@@ -146,7 +146,7 @@ async function handleSubmit() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0b0c0f;
+  background: #9B4094;
   font-family: 'Syne', sans-serif;
   position: relative;
   overflow: hidden;
@@ -188,7 +188,7 @@ async function handleSubmit() {
 .card {
   position: relative;
   z-index: 1;
-  background: rgba(255,255,255,0.03);
+  background: #3d0938;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 20px;
   padding: 48px 40px 40px;
