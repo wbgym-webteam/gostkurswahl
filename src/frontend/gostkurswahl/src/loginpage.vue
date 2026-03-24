@@ -9,7 +9,7 @@
           <span class="logo-dot"></span>
           <span class="logo-dot"></span>
         </div>
-        <h1 class="title">Kurs Wahl</h1>
+        <h1 class="title">Kurswahl</h1>
         <p class="subtitle">Gib den 10 stelligen Code ein, der deiner Email zugesendet wurde.</p>
       </div>
 
@@ -37,13 +37,13 @@
       <div class="status-row">
         <transition name="fade">
           <p v-if="hasError" class="status-msg error-msg">
-            Falscher Code. Please check your email and try again.
+            Falscher Code. Bitte überprüfe deine Email und versuche es erneut.
           </p>
           <p v-else-if="isSuccess" class="status-msg success-msg">
-            ✓ Code verified! Redirecting…
+            ✓ Code verifiziert! Weiterleiten...
           </p>
           <p v-else-if="filled" class="status-msg hint-msg">
-            Press confirm to verify your code.
+            Drücke bestätigen um deinen Code zu überprüfen.
           </p>
         </transition>
       </div>
@@ -55,10 +55,10 @@
         @click="handleSubmit"
       >
         <span v-if="isLoading" class="spinner"></span>
-        <span v-else>{{ filled ? 'Confirm Code' : 'Enter your code above' }}</span>
+        <span v-else>{{ filled ? 'Code bestätigen' : 'Gib deinen Code ein' }}</span>
       </button>
 
-      <p class="resend">Didn't receive a code? <a href="#">Resend email</a></p>
+      <p class="resend">Hast du keinen Code bekommen? <a href="#">Email erneut senden.</a></p>
     </div>
   </div>
 </template>
