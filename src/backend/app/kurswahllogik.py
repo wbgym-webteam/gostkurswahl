@@ -75,5 +75,5 @@ def Wahlkurse(taken_curses):
             return ["DE"]
         elif taken_curses[1] == "DE" and taken_curses[2] == "EK":
             return ["MA"]
-    Kursliste.remove(set(Kursliste) & set(taken_curses))
+    Kursliste.remove(set(Kursliste) - set(taken_curses))
     return Kursliste
