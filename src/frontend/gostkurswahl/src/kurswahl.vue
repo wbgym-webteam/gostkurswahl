@@ -5,7 +5,7 @@
     <header class="kw-header">
       <div class="kw-header__inner">
         <h1 class="kw-header__title">Kurswahl</h1>
-        <p class="kw-header__sub">Wähle deine Leistungs- und Grundkurse für die Qualifikationsphase</p>
+        <p class="kw-header__sub">Wähle deine Leistungs- und Grundkurse für die Oberstufe</p>
         <div class="kw-progress">
           <div class="kw-progress__bar">
             <div class="kw-progress__fill" :style="{ width: progressPct + '%' }" />
@@ -35,9 +35,9 @@
           <!-- LK 1 — fest: EN / DE / MA -->
           <div class="kw-card">
             <div class="kw-card__head kw-card__head--lk">
-              <span class="kw-badge kw-badge--lk">LK 1</span>
-              <span class="kw-card__title">1. Leistungskurs</span>
-              <span class="kw-card__hint">Pflichtfach</span>
+              <span class="kw-badge kw-badge--lk">1. LK</span>
+              <span class="kw-card__title">Leistungskurs</span>
+              <span class="kw-card__hint"></span>
             </div>
             <div class="kw-card__body">
               <div class="kw-opts">
@@ -157,13 +157,13 @@ const LK1_OPTIONS = ['EN', 'DE', 'MA']
 
 // Karten-Definitionen — nur UI-Metadaten, keine Logik
 const CARDS = [
-  { slot: 2, isLK: true,  badge: 'LK 2', title: '2. Leistungskurs', hint: 'Pflichtfach' },
-  { slot: 3, isLK: false, badge: '1. GK', title: '1. Grundkurs',     hint: 'Kunst · Musik · DS' },
-  { slot: 4, isLK: false, badge: '2. GK', title: '2. Grundkurs',     hint: 'Geschichte' },
-  { slot: 5, isLK: false, badge: '3. GK', title: '3. Grundkurs',     hint: 'Naturwiss. / Fremdsprache / MA' },
-  { slot: 6, isLK: false, badge: '4. GK', title: '4. Grundkurs',     hint: 'Abhängig vom Pfad' },
-  { slot: 7, isLK: false, badge: '5. GK', title: '5. Grundkurs',     hint: 'Freie Wahl' },
-  { slot: 8, isLK: false, badge: '6. GK', title: '6. Grundkurs',     hint: 'Freie Wahl' },
+  { slot: 2, isLK: true,  badge: '2. LK', title: 'Leistungskurs', hint: '' },
+  { slot: 3, isLK: false, badge: '1. GK', title: 'Grundkurs',     hint: '' },
+  { slot: 4, isLK: false, badge: '2. GK', title: 'Grundkurs',     hint: '' },
+  { slot: 5, isLK: false, badge: '3. GK', title: 'Grundkurs',     hint: '' },
+  { slot: 6, isLK: false, badge: '4. GK', title: 'Grundkurs',     hint: '' },
+  { slot: 7, isLK: false, badge: '5. GK', title: 'Grundkurs',     hint: '' },
+  { slot: 8, isLK: false, badge: '6. GK', title: 'Grundkurs',     hint: '' },
 ]
 
 // Anzeigebezeichnungen (nur für die UI — die IDs kommen vom Server)
@@ -279,12 +279,14 @@ async function loadOptions(slot) {
 // Kurs wählen oder abwählen
 async function select(slot, id) {
   if (selection[slot] === id) {
-    // Abwählen: diesen und alle nachfolgenden Slots leeren
+    // Abwählen: diesen und alle nachfolgenden Slots leeren …
     for (let i = slot; i <= 8; i++) {
       selection[i] = null
       delete options[i]
       delete errors[i]
     }
+    // … aber Optionen für diesen Slot neu laden, damit man direkt neu wählen kann
+    await loadOptions(slot)
   } else {
     // Neu wählen: alle nachfolgenden Slots leeren …
     for (let i = slot + 1; i <= 8; i++) {
@@ -340,6 +342,11 @@ const summaryRows = computed(() => [
 </script>
 
 <style scoped>
+/* ─── Global reset ─────────────────────────────────────────────────────────── */
+:global(*, *::before, *::after) { box-sizing: border-box; }
+:global(html, body) { margin: 0; padding: 0; background: #F6F1F5; }
+:global(#app) { min-height: 100vh; width: 100%; }
+
 /* ─── Design Tokens ────────────────────────────────────────────────────────── */
 .kw-app {
   --c-primary:    #560D4F;
@@ -362,20 +369,20 @@ const summaryRows = computed(() => [
   background: var(--c-accent);
   color: var(--c-text);
   min-height: 100vh;
-  padding: 2rem 1rem 5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* ─── Header ──────────────────────────────────────────────────────────────── */
 .kw-header {
   background: var(--c-primary);
-  margin: -2rem -1rem 2.5rem;
   padding: 2.8rem 1rem 2.2rem;
 }
 .kw-header__inner { max-width: 1060px; margin: 0 auto; text-align: center; }
 .kw-header__title {
-  font-family: 'Playfair Display', Georgia, serif;
   font-size: clamp(2rem, 4.5vw, 3rem);
-  color: #fff; letter-spacing: -.5px;
+  color: #fff; letter-spacing: -.5px; font-weight: 600;
 }
 .kw-header__sub { color: rgba(255,255,255,.6); font-size: .95rem; margin-top: .5rem; font-weight: 300; }
 
@@ -385,7 +392,7 @@ const summaryRows = computed(() => [
 .kw-progress__labels { display: flex; justify-content: space-between; font-size: .77rem; color: rgba(255,255,255,.55); margin-top: .45rem; }
 
 /* ─── Page / Layout ───────────────────────────────────────────────────────── */
-.kw-page   { max-width: 1060px; margin: 0 auto; }
+.kw-page   { max-width: 1060px; margin: 0 auto; padding: 2rem 1rem 5rem; }
 .kw-layout { display: grid; grid-template-columns: 1fr 270px; gap: 1.5rem; align-items: start; }
 @media (max-width: 820px) {
   .kw-layout { grid-template-columns: 1fr; }
@@ -453,7 +460,7 @@ const summaryRows = computed(() => [
 .kw-opt--selected .kw-opt__dot { background: currentColor; }
 
 /* ─── Hint & error text ───────────────────────────────────────────────────── */
-.kw-hint-text        { font-size: .82rem; color: var(--c-muted); font-style: italic; display: flex; align-items: center; gap: .5rem; }
+.kw-hint-text        { font-size: .82rem; color: var(--c-muted); font-style: normal; display: flex; align-items: center; gap: .5rem; }
 .kw-hint-text--lock  { color: var(--c-muted); }
 .kw-hint-text--error { color: var(--c-error); font-style: normal; }
 .kw-retry {
@@ -493,8 +500,7 @@ const summaryRows = computed(() => [
   padding: 1.3rem 1.3rem 1.5rem;
 }
 .kw-summary__title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.1rem; color: var(--c-primary);
+  font-size: 1.1rem; font-weight: 600; color: var(--c-primary);
   margin-bottom: 1rem; padding-bottom: .7rem;
   border-bottom: 2px solid var(--c-accent);
 }
