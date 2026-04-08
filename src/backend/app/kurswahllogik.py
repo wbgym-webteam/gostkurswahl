@@ -1,8 +1,27 @@
 from flask import Flask
-from db_connector import *
+import db_connector as dbc
 
 # Liste aller Fächer
-Kursliste = ["EN", "DE", "MA", "GE", "GEBI", "PB", "EK", "BI", "CH", "PH", "INF", "TK", "FR", "SN", "LA", "KU", "MU", "DS"]
+Kursliste = [
+    "EN",
+    "DE",
+    "MA",
+    "GE",
+    "GEBI",
+    "PB",
+    "EK",
+    "BI",
+    "CH",
+    "PH",
+    "INF",
+    "TK",
+    "FR",
+    "SN",
+    "LA",
+    "KU",
+    "MU",
+    "DS",
+]
 # Ich hoffe das sind alle
 
 # Erklärungen der Abkürzungen:
@@ -26,6 +45,7 @@ Kursliste = ["EN", "DE", "MA", "GE", "GEBI", "PB", "EK", "BI", "CH", "PH", "INF"
 
 # Aufbau der Liste "taken_courses": [Wahlstufe, 1. LK, 2. LK, 1. GK, 2. GK, 3. GK, 4. GK, 5. GK, 6. GK]
 
+
 def selection_level(taken_courses, user_id):
     if taken_courses[0] == 2:
         selection_choices = Leistungskurse(taken_courses)
@@ -33,11 +53,11 @@ def selection_level(taken_courses, user_id):
         selection_choices = Grundkurse(taken_courses)
     elif taken_courses[0] > 6:
         selection_choices = Wahlkurse(taken_courses)
-    available_courses = retrieve_user_options(self, user_id)
+    available_courses = dbc.retrieve_user_options(user_id)
     selection_choices.remove(set(selection_choices) - set(available_courses))
     return selection_choices
-    
-    
+
+
 def Leistungskurse(taken_courses):
     if taken_courses[1] == "EN":
         return ["Ma", "DE", "EK", "BI", "CH", "PH"]
@@ -46,6 +66,7 @@ def Leistungskurse(taken_courses):
     if taken_courses[1] == "MA":
         return ["EK", "BI", "CH", "PH"]
 
+
 def Grundkurse(taken_courses):
     if taken_courses[0] == 3:
         return ["KU", "MU", "DS"]
@@ -53,7 +74,11 @@ def Grundkurse(taken_courses):
         return ["GE", "GEBI"]
     elif taken_courses[0] == 5:
         if taken_courses[1] == "EN":
-            if taken_courses[2] == "MA" or taken_courses[2] == "DE" or taken_courses[2] == "EK":
+            if (
+                taken_courses[2] == "MA"
+                or taken_courses[2] == "DE"
+                or taken_courses[2] == "EK"
+            ):
                 return ["BI", "CH", "PH"]
             else:
                 return ["MA"]
@@ -75,15 +100,19 @@ def Grundkurse(taken_courses):
                 return ["BI", "CH", "PH"]
             else:
                 return ["DE"]
-        
+
+
 def Wahlkurse(taken_courses):
-    if taken_curses[0] == 7:
-        if (taken_courses[1] == "EN" or taken_courses[1] == "MA") and taken_courses[2] == "EK":
+    if taken_courses[0] == 7:
+        if (taken_courses[1] == "EN" or taken_courses[1] == "MA") and taken_courses[
+            2
+        ] == "EK":
             return ["DE"]
         elif taken_courses[1] == "DE" and taken_courses[2] == "EK":
             return ["MA"]
     Kursliste.remove(set(Kursliste) - set(taken_courses))
     return Kursliste
 
+
 def postwahlkurse(taken_courses, user_id):
-    update_user_selection(self, user_id, taken_courses)
+    dbc.update_user_selection(user_id, taken_courses)
