@@ -5,13 +5,11 @@ api = Blueprint("api", __name__)
 
 
 # Login
-@api.route("/login", methods=["POST"])
+@api.route("/api/login", methods=["POST"])
 def api_login():
     data = request.get_json()
     logincode = data.get("logincode")
-    verification = dbc.verify_logincode(logincode)
-    if verification.get_json().get("success") == True:
-        return jsonify(
-            {"success": True, "user_id": verification.get_json().get("user_id")}
-        )
+    verification = dbc.verify_logincode(logincode).get_json()
+    if verification.get("success") == True:
+        return jsonify({"success": True, "user_id": verification.get("user_id")})
     return jsonify({"success": False})

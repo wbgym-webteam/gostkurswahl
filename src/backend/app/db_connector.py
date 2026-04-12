@@ -11,7 +11,7 @@ class DB_Connector:
 
     def verify_logincode(self, logincode):
         query = db.execute(
-            text("SELECT * FROM users WHERE logincode=:logincode"),
+            text("SELECT * FROM user WHERE logincode=:logincode"),
             {"logincode": logincode},
         )
 
@@ -24,7 +24,7 @@ class DB_Connector:
 
     def retrieve_user_options(self, user_id):
         query = db.execute(
-            text("SELECT options FROM users WHERE id=:user_id"),
+            text("SELECT options FROM user WHERE id=:user_id"),
             {"user_id": user_id},
         )
         result = query.mappings().fetchone()
@@ -39,7 +39,7 @@ class DB_Connector:
 
     def delete_user_from_db(self, user_id):
         query = db.execute(
-            text("DELETE FROM users WHERE id=:user_id"),
+            text("DELETE FROM user WHERE id=:user_id"),
             {"user_id": user_id},
         )
         db.commit()
@@ -49,7 +49,7 @@ class DB_Connector:
 
     def get_user_selection(self, user_id):
         query = db.execute(
-            text("SELECT selection FROM users WHERE id=:user_id"),
+            text("SELECT selection_json FROM selection WHERE id=:user_id"),
             {"user_id": user_id},
         )
         result = query.mappings().fetchone()
@@ -59,8 +59,20 @@ class DB_Connector:
 
     def update_user_selection(self, user_id, selection):
         query = db.execute(
-            text("UPDATE users SET selection=:selection WHERE id=:user_id"),
+            text(
+                "UPDATE selection SET selection_json=:selection WHERE user_id=:user_id"
+            ),
             {"selection": selection, "user_id": user_id},
+        )
+        db.commit()
+        if query.rowcount > 0:
+            return jsonify({"success": True})
+        return jsonify({"success": False})
+
+    def finalize_user_selection(self, user_id):
+        query = db.execute(
+            text("UPDATE selection SET finalized=True WHERE id=:user_id"),
+            {"user_id": user_id},
         )
         db.commit()
         if query.rowcount > 0:

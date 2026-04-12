@@ -13,7 +13,7 @@ class User(db.Model):
     options = db.Column(db.Text, nullable=True)  # JSON string of user options
 
 
-class selection(db.Model):
+class Selection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     selection_json = db.Column(db.Text, nullable=False)
