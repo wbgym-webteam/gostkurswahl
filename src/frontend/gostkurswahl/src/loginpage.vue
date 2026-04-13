@@ -1,14 +1,7 @@
 <template>
   <div class="wrapper">
-    <div class="noise"></div>
-
     <div class="card">
       <div class="header">
-        <div class="logo">
-          <span class="logo-dot"></span>
-          <span class="logo-dot"></span>
-          <span class="logo-dot"></span>
-        </div>
         <h1 class="title">Kurswahl</h1>
         <p class="subtitle">Gib den 10 stelligen Code ein, der deiner Email zugesendet wurde.</p>
       </div>
@@ -17,7 +10,7 @@
         <input
           v-for="(_, i) in chars"
           :key="i"
-          :ref="el => { if (el) inputs[i] = el }"
+          :ref="el => setInputRef(el, i)"
           v-model="chars[i]"
           class="otp-box"
           :class="{
@@ -27,7 +20,8 @@
           }"
           maxlength="1"
           autocomplete="off"
-          spellcheck="false"
+          inputmode="text"
+          :disabled="isLoading || isSuccess"
           @keydown="handleKeydown($event, i)"
           @input="handleInput($event, i)"
           @focus="handleFocus(i)"
@@ -75,6 +69,10 @@ const isLoading = ref(false)
 
 const filled = computed(() => chars.value.every(c => c !== ''))
 
+function setInputRef(el, i) {
+  if (el) inputs.value[i] = el
+}
+
 onMounted(() => {
   inputs.value[0]?.focus()
 })
@@ -109,10 +107,23 @@ function handleFocus(i) {
 
 function handlePaste(e) {
   e.preventDefault()
-  const text = e.clipboardData.getData('text').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, LENGTH)
-  text.split('').forEach((ch, i) => { chars.value[i] = ch })
-  const next = Math.min(text.length, LENGTH - 1)
-  inputs.value[next]?.focus()
+
+  if (isLoading.value || isSuccess.value) return
+
+  const text = e.clipboardData
+    .getData('text')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, LENGTH)
+
+  // reset first (FIXED BUG)
+  chars.value = Array(LENGTH).fill('')
+
+  text.split('').forEach((ch, i) => {
+    chars.value[i] = ch
+  })
+
+  inputs.value[Math.min(text.length, LENGTH - 1)]?.focus()
 }
 
 async function handleSubmit() {
@@ -137,7 +148,6 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;800&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -147,20 +157,9 @@ async function handleSubmit() {
   align-items: center;
   justify-content: center;
   background: #9B4094;
-  font-family: 'Syne', sans-serif;
+  font-family: 'Syne', system-ui, -apple-system, sans-serif;
   position: relative;
   overflow: hidden;
-}
-
-.noise {
-  position: fixed;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  pointer-events: none;
-  z-index: 0;
 }
 
 .wrapper::before {
@@ -188,7 +187,7 @@ async function handleSubmit() {
 .card {
   position: relative;
   z-index: 1;
-  background: #3d0938;
+  background: #560D4F;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 20px;
   padding: 48px 40px 40px;
@@ -205,21 +204,8 @@ async function handleSubmit() {
 
 .header { text-align: center; margin-bottom: 36px; }
 
-.logo {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  margin-bottom: 20px;
-}
 
-.logo-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #63d2ac;
-  animation: pulse 2s ease-in-out infinite;
-}
-.logo-dot:nth-child(2) { background: #63a0d2; animation-delay: 0.3s; }
-.logo-dot:nth-child(3) { background: #d263ac; animation-delay: 0.6s; }
+
 
 @keyframes pulse {
   0%, 100% { opacity: 0.4; transform: scale(1); }
@@ -251,8 +237,7 @@ async function handleSubmit() {
 }
 
 .otp-box {
-  font-family: 'DM Mono', monospace;
-  font-size: 18px;
+  font-family: 'DM Mono', ui-monospace, SFMono-Regular, monospace;  font-size: 18px;
   font-weight: 500;
   text-align: center;
   text-transform: uppercase;
@@ -263,7 +248,7 @@ async function handleSubmit() {
   height: 56px;
   width: 100%;
   outline: none;
-  caret-color: #9B4094;
+  caret-color: #593756;
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.1s;
 }
 
@@ -321,8 +306,7 @@ async function handleSubmit() {
   padding: 16px;
   border-radius: 12px;
   border: none;
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
+  font-family: 'Syne', system-ui, -apple-system, sans-serif;  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   background: rgba(255,255,255,0.06);
@@ -337,14 +321,14 @@ async function handleSubmit() {
 }
 
 .confirm-btn.ready {
-  background: linear-gradient(135deg, #63d2ac, #5ab8d4);
+  background: linear-gradient(135deg, #C64BBEFF, #9A0DD9FF);
   color: #0b0c0f;
-  box-shadow: 0 4px 24px rgba(99,210,172,0.25);
+  box-shadow: 0 4px 24px rgba(198,75,190,0.25);
 }
 
 .confirm-btn.ready:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 32px rgba(99,210,172,0.35);
+  box-shadow: 0 8px 32px #9B4094FF;
 }
 
 .confirm-btn.ready:active {
@@ -369,9 +353,9 @@ async function handleSubmit() {
   color: rgba(255,255,255,0.25);
 }
 .resend a {
-  color: rgba(99,210,172,0.7);
+  color: #9B4094;
   text-decoration: none;
   font-weight: 600;
 }
-.resend a:hover { color: #63d2ac; }
+.resend a:hover { color: #ff78f4; }
 </style>
