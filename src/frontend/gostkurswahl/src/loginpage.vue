@@ -60,7 +60,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
-const LENGTH = 12
+const LENGTH = 10
 const chars = ref(Array(LENGTH).fill(''))
 const inputs = ref([])
 const hasError = ref(false)
@@ -231,7 +231,7 @@ async function handleSubmit() {
 
 .otp-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
   margin-bottom: 16px;
 }
@@ -242,7 +242,7 @@ async function handleSubmit() {
   text-align: center;
   text-transform: uppercase;
   color: #f0f0f0;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,54,224,0.05);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   height: 56px;
