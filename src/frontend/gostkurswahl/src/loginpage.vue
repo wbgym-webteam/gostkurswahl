@@ -2,6 +2,7 @@
   <div class="wrapper">
     <div class="card">
       <div class="header">
+        <p class="countdown"> Nur noch {{ formattedTime }} Zeit bis zum Wahlschluss.</p>
         <h1 class="title">Kurswahl</h1>
         <p class="subtitle">Gib den 10 stelligen Code ein, der deiner Email zugesendet wurde.</p>
       </div>
@@ -58,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const LENGTH = 10
 const chars = ref(Array(LENGTH).fill(''))
@@ -145,6 +146,41 @@ async function handleSubmit() {
     setTimeout(() => inputs.value[0]?.focus(), 50)
   }
 }
+
+
+// timer logic
+const deadline = new Date('2026-06-06T06:06:06')
+
+const timeLeft = ref(0)
+let timer = null
+
+function updateTimer() {
+  const now = new Date()
+  const diff = deadline - now
+  timeLeft.value = diff > 0 ? diff : 0
+}
+
+onMounted(() => {
+  updateTimer()
+  timer = setInterval(updateTimer, 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
+
+// 🧮 Format into readable string
+const formattedTime = computed(() => {
+  if (timeLeft.value <= 0) return 'abgelaufen'
+
+  const totalSeconds = Math.floor(timeLeft.value / 1000)
+  const days = Math.floor(totalSeconds / (3600 * 24))
+  const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+
+  return `${days} Tage ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`
+})
 </script>
 
 <style scoped>
@@ -205,12 +241,15 @@ async function handleSubmit() {
 .header { text-align: center; margin-bottom: 36px; }
 
 
-
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50%       { opacity: 1;   transform: scale(1.3); }
+.countdown {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 12px;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
+
 
 .title {
   font-size: 28px;
